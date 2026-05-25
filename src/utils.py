@@ -3,19 +3,18 @@ import numpy as np
 import torch
 
 def set_seed(seed=42):
-    """Cố định random seed để đảm bảo tính tái lập (reproducibility)"""
-    # Cố định cho Python
+    """Set random seed to ensure reproducibility."""
+    # Set seed for Python's built-in random module
     random.seed(seed)
-    # Cố định cho Numpy
+    # Set seed for NumPy
     np.random.seed(seed)
-    # Cố định cho PyTorch (CPU)
+    # Set seed for PyTorch (CPU)
     torch.manual_seed(seed)
-    # Cố định cho PyTorch (GPU - nếu có)
+    # Set seed for PyTorch (GPU - if available)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
-    # Đảm bảo các phép toán của cuDNN hoạt động ổn định
+        torch.cuda.manual_seed_all(seed)   
+    # Ensure deterministic operations for cuDNN
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-
-    print(f"Đã cố định Random Seed: {seed}")
+    print(f"Random seed set to: {seed}")
