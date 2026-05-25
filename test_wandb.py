@@ -2,7 +2,7 @@ import wandb
 import random
 import time
 
-# 1. Khởi tạo W&B (Khai báo tên dự án và cấu hình)
+# 1. Initialize W&B (Declare project name and config)
 wandb.init(
     entity="nlp-emotion",
     project="nlp-emotion-classification", 
@@ -14,29 +14,30 @@ wandb.init(
         "batch_size": 32
     }
 )
-# # Khởi tạo W&B cho DistilBERT 
+
+# # Initialize W&B for DistilBERT 
 # wandb.init(
 #     entity="nlp-emotion",
-#     project="nlp-emotion-classification",  # GIỮ NGUYÊN: Để vào chung một dự án
-#     name="DistilBERT_Test_Run",  # THAY ĐỔI: Tên lần chạy của DistilBERT
+#     project="nlp-emotion-classification",  # KEEP THIS: To stay in the same project workspace
+#     name="DistilBERT_Test_Run",  # CHANGE: Run name for DistilBERT
 #     config={
-#         "architecture": "DistilBERT",  # THAY ĐỔI: Tên kiến trúc mô hình
-#         "learning_rate": 2e-5,  # THAY ĐỔI: Thường DistilBERT dùng lr nhỏ hơn LSTM
+#         "architecture": "DistilBERT",  # CHANGE: Model architecture name
+#         "learning_rate": 2e-5,  # CHANGE: DistilBERT usually requires a smaller lr than LSTM
 #         "epochs": 5,
-#         "batch_size": 16,  # THAY ĐỔI: Model nặng nên thường giảm batch_size
+#         "batch_size": 16,  # CHANGE: Heavy model so batch_size is usually reduced
 #     },
 # )
 
-print("Bắt đầu huấn luyện mô hình giả lập...")
+print("Starting mock model training...")
 
-# 2. Vòng lặp huấn luyện (Giả lập)
+# 2. Training loop (Mock)
 epochs = wandb.config.epochs
 for epoch in range(epochs):
-    # Tạo ra các con số ảo (F1 tăng dần, Loss giảm dần) để test
+    # Generate mock numbers (F1 increasing, Loss decreasing) for testing
     train_loss = 0.8 - (epoch * 0.1) + random.uniform(-0.05, 0.05)
     val_f1 = 0.5 + (epoch * 0.08) + random.uniform(-0.02, 0.02)
     
-    # BẮT BUỘC: Gửi dữ liệu lên dashboard W&B
+    # REQUIRED: Send data to W&B dashboard
     wandb.log({
         "epoch": epoch + 1,
         "train_loss": train_loss,
@@ -44,8 +45,8 @@ for epoch in range(epochs):
     })
     
     print(f"Epoch {epoch+1}/{epochs} | Loss: {train_loss:.4f} | F1: {val_f1:.4f}")
-    time.sleep(1) # Dừng 1 giây cho giống đang train thật
+    time.sleep(1) # Pause for 1 second to simulate real training time
 
-# 3. Đóng kết nối
+# 3. Close connection
 wandb.finish()
-print("Hoàn tất! Hãy lên trang chủ wandb.ai để xem biểu đồ.")
+print("Done! Check your W&B dashboard at wandb.ai to see the charts.")
