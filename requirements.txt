@@ -1,6 +1,6 @@
 torch
 transformers
-wandb==0.26.1
+wandb
 numpy==2.0.2
 pandas==2.3.3
 scikit-learn==1.6.1
