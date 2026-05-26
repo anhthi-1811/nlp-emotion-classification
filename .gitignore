@@ -7,4 +7,4 @@ data/**/*.xlsx
 
 # Ignore system or Python cache files
 __pycache__/
-.ipynb_checkpoints/ 
+.ipynb_checkpoints/  git status 
