@@ -6,22 +6,19 @@ import re
 import pandas as pd
 from typing import Union, List
 from tqdm import tqdm 
+import contractions
+from emot.core import emot
 
 class DLTextPreprocessor:
     """
-    A professional-grade text preprocessor optimized for Deep Learning models (BERT/LSTM).
-    Preserves semantic context, handles contractions, and removes digital noise.
+    A professional-grade text preprocessor optimized for Deep Learning models.
+    Auto-translates emoticons, handles GoEmotions tags, expands contractions,
+    and removes digital noise while preserving semantic context.
     """
     
     def __init__(self):
-        # Encapsulate the contraction map inside the class so it doesn't pollute the global scope
-        self.CONTRACTION_MAP = {
-            "i'm": "i am", "can't": "cannot", "won't": "will not",
-            "don't": "do not", "doesn't": "does not", "didn't": "did not",
-            "isn't": "is not", "aren't": "are not", "wasn't": "was not",
-            "weren't": "were not", "haven't": "have not", "hasn't": "has not",
-            "hadn't": "had not", "it's": "it is", "that's": "that is"
-        }
+        # Initialize the auto-emoticon translation engine once to save memory/time
+        self.emot_engine = emot()
         
     def _clean_single_text(self, text: str) -> str:
         """
@@ -30,26 +27,41 @@ class DLTextPreprocessor:
         if not isinstance(text, str):
             text = str(text)
             
-        text = text.lower()
-        
-        # Expand contractions
-        for contraction, expansion in self.CONTRACTION_MAP.items():
-            text = re.sub(r"\b" + contraction + r"\b", expansion, text)
-            
-        # Remove digital noise (URLs, mentions, HTML)
+        # 1. REMOVE DIGITAL NOISE FIRST! (CRITICAL FIX)
+        # Must remove URLs before translating emoticons, otherwise ':/' in 'http://' 
+        # gets translated into 'confused face' and the URL is permanently corrupted.
         text = re.sub(r'http[s]?://\S+|www\.\S+', ' ', text)
         text = re.sub(r'@\w+', ' ', text)
         text = re.sub(r'&\w+;|<[^>]+>', ' ', text)
         
-        # Keep only alphabets and expressive punctuations
+        # 2. Handle GoEmotions specific tags
+        text = re.sub(r'\[NAME\]', 'someone', text)
+        text = re.sub(r'\[RELIGION\]', 'religion', text)
+        text = re.sub(r'\[[A-Z]+\]', ' ', text)
+        
+        # 3. EMOTION PRESERVATION (AUTOMATED)
+        # Safe to translate now since URLs are purged.
+        emoticon_info = self.emot_engine.emoticons(text)
+        if emoticon_info and isinstance(emoticon_info, dict) and emoticon_info.get('flag'):
+            for value, mean in zip(emoticon_info['value'], emoticon_info['mean']):
+                clean_mean = re.sub(r'[^a-zA-Z\s]', '', mean).lower()
+                text = text.replace(value, f" {clean_mean} ")
+        
+        # 4. Expand ALL English contractions automatically
+        text = contractions.fix(text)
+        
+        # 5. Convert to lowercase 
+        text = text.lower()
+                
+        # 6. Strict Regex: Keep ONLY alphabets, spaces, and basic expressive punctuations
         text = re.sub(r'[^a-z\s\!\?\.\,]', ' ', text)
         
-        # Collapse multiple spaces
+        # 7. Collapse multiple consecutive spaces into a single space and strip edges
         text = re.sub(r'\s+', ' ', text).strip()
         
         return text
 
-    def transform(self, data: Union[str, List[str], pd.Series]) -> Union[str, List[str]]:
+    def transform(self, data: Union[str, List[str], pd.Series]) -> Union[str, List[str], pd.Series]:
         """
         Main method intelligently handles single strings, Lists, or Pandas Series.
         Auto-triggers a progress bar for large datasets.
@@ -57,13 +69,19 @@ class DLTextPreprocessor:
         if isinstance(data, str):
             return self._clean_single_text(data)
             
-        elif isinstance(data, (list, pd.Series)):
-            # Tự động kích hoạt thanh tiến trình nếu dữ liệu lớn hơn 1000 dòng
+        elif isinstance(data, pd.Series):
+            # Native Pandas application to strictly preserve Index alignment (CRITICAL FIX)
             if len(data) > 1000:
-                from tqdm import tqdm
-                return [self._clean_single_text(text) for text in tqdm(data, desc="Purifying Text")]
+                tqdm.pandas(desc="Purifying Text Series")
+                return data.progress_apply(self._clean_single_text)
+            else:
+                return data.apply(self._clean_single_text)
+                
+        elif isinstance(data, list):
+            if len(data) > 1000:
+                return [self._clean_single_text(text) for text in tqdm(data, desc="Purifying Text List")]
             else:
                 return [self._clean_single_text(text) for text in data] 
             
         else:
-            raise TypeError("Input must be a string, list of strings, or pandas Series.")
+            raise TypeError("Input must be a string, list of strings, or pandas Series.") 
