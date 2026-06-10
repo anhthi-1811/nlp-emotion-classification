@@ -38,14 +38,6 @@ def evaluate_goemotions(
     precision = precision_score(y_true, y_pred, average='micro', zero_division=0)
     recall = recall_score(y_true, y_pred, average='micro', zero_division=0)
     
-    print("==================================================")
-    print("OVERALL PERFORMANCE REPORT (CORE METRICS)") 
-    print("==================================================")
-    print(f"Macro F1-score : {macro_f1:.4f} (Primary Metric)")
-    print(f"Micro F1-score : {micro_f1:.4f}")
-    print(f"Precision      : {precision:.4f}")
-    print(f"Recall         : {recall:.4f}\n")
-    
     # 3. Calculate Multi-label Confusion Matrix for ERROR ANALYSIS
     mcm = multilabel_confusion_matrix(y_true, y_pred)
     fn_analysis = []
@@ -70,14 +62,23 @@ def evaluate_goemotions(
     
     top_5_hardest = df_errors.head(5)
     
-    print("==================================================")
-    print("ERROR ANALYSIS REPORT - FALSE NEGATIVES (FOR PHUONG)")
-    print("==================================================")
-    print("Description: Top 5 emotions the model is most likely to miss (Predicted 0, Actual 1).")
-    print("Action item: Consider reviewing class_weights or augmenting data for these labels.\n")
-    
-    print(top_5_hardest.to_string(index=False))
-    print("\n==================================================")
+    #5. If verbose = True -> print
+    if verbose: 
+        print("==================================================")
+        print("OVERALL PERFORMANCE REPORT (CORE METRICS)") 
+        print("==================================================")
+        print(f"Macro F1-score : {macro_f1:.4f} (Primary Metric)")
+        print(f"Micro F1-score : {micro_f1:.4f}")
+        print(f"Precision      : {precision:.4f}")
+        print(f"Recall         : {recall:.4f}\n")
+        print("==================================================")
+        print("ERROR ANALYSIS REPORT - FALSE NEGATIVES (FOR PHUONG)")
+        print("==================================================")
+        print("Description: Top 5 emotions the model is most likely to miss (Predicted 0, Actual 1).")
+        print("Action item: Consider reviewing class_weights or augmenting data for these labels.\n")
+        
+        print(top_5_hardest.to_string(index=False))
+        print("\n==================================================")
     
     # --- UPDATED: Return all 5 values ---
     return macro_f1, micro_f1, precision, recall, top_5_hardest 
