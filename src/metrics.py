@@ -12,6 +12,7 @@ def evaluate_goemotions(
     y_pred_probs: np.ndarray, 
     label_names: List[str], 
     threshold: float = 0.5
+    verbose: bool = True
 ) -> Tuple[float, float, float, float, pd.DataFrame]:
     """
     Evaluates a Multi-label classification model for the GoEmotions dataset.
