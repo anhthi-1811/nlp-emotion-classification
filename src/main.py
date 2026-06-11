@@ -1,4 +1,3 @@
-%%writefile main.py
 # =====================================================================
 # FILE: main.py
 # ROLE: Central orchestration, experiment configuration, and structured model saving
