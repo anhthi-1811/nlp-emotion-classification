@@ -1,4 +1,3 @@
-%%writefile engine.py
 # =====================================================================
 # FILE: engine.py
 # ROLE: Core training execution, validation loops, and threshold tuning
