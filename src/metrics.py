@@ -73,7 +73,7 @@ def evaluate_goemotions(
         print(f"Precision      : {precision:.4f}")
         print(f"Recall         : {recall:.4f}\n")
         print("==================================================")
-        print("ERROR ANALYSIS REPORT - FALSE NEGATIVES (FOR PHUONG)")
+        print("ERROR ANALYSIS REPORT - FALSE NEGATIVES")
         print("==================================================")
         print("Description: Top 5 emotions the model is most likely to miss (Predicted 0, Actual 1).")
         print("Action item: Consider reviewing class_weights or augmenting data for these labels.\n")
