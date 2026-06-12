@@ -261,7 +261,6 @@ def train_model(train_loader, val_loader, tokenizer, device, label_names, use_cl
                     }
                 }
                 torch.save(checkpoint, f"weights/best_bilstm_{run_name}.pt")
-                print(f"Saved checkpoint: weights/best_bilstm_{run_name}.pt")
                 
             else:
                 patience_count += 1
@@ -302,6 +301,7 @@ def train_model(train_loader, val_loader, tokenizer, device, label_names, use_cl
             break
     
     print(f"\nBest Val Macro F1: {best_val_f1:.4f} at Epoch {best_epoch}/{config.epochs}")
+    print(f"Saved checkpoint: weights/best_bilstm_{run_name}.pt")
     wandb.finish()
     print("Training completed! Check your W&B dashboard for detailed metrics and visualizations.")
     return model # Return Model in order to test it on the test set after training
