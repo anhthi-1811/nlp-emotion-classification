@@ -330,7 +330,7 @@ if __name__ == "__main__":
 
     # --- 1. Load checkpoint + predict ---
     # Rename checkpoint file to match the one saved in weights/
-    CHECKPOINT_PATH = "weights/best_bilstm_BiLSTM_w+GloVe+HD512+Ep30+Sched+Clip.pt"
+    CHECKPOINT_PATH = "weights/best_bilstm.pt"
     y_true, y_prob, label_names = load_model_and_predict(CHECKPOINT_PATH, test_loader, device)
 
     # Take from previous tune_threshold() results (Exp3 -> best threshold = 0.55)
