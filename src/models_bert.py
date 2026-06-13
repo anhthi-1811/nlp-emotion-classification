@@ -1,5 +1,5 @@
 # =====================================================================
-# FILE: models.py
+# FILE: models_bert.py
 # ROLE: Model architecture definitions for GoEmotions classification
 # =====================================================================
 
