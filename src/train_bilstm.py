@@ -408,73 +408,94 @@ if __name__ == "__main__":
     tokenizer.build_vocab(df_train['text'].tolist())
     print(f"Vocab size: {tokenizer.vocab_size}")
  
-    print("Loading GloVe 300d via gensim...")
-    glove_model      = api.load("glove-wiki-gigaword-300")
-    embedding_matrix = build_glove_embedding_matrix(tokenizer, glove_model, embedding_dim=300)
-
-
     # -----------------------------------------------------------------------
-    # EXPERIMENT 1: BASELINE (Tự học embedding 100d, Não nhỏ HD 256)
+    # CREATE EXPERIMENT SELECTION MENU
     # -----------------------------------------------------------------------
-    # model = train_model(
-    #     train_loader=train_loader, val_loader=val_loader,
-    #     tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
-    #     use_class_weights=True, embedding_matrix=None,
-    #     hidden_dim=256, epochs=10, dropout=0.5, weight_decay=1e-5,
-    #     use_scheduler=False, use_grad_clipping=False, early_stopping=False
-    # )
- 
-    # -----------------------------------------------------------------------
-    # EXPERIMENT 2: + GLOVE 300D (Bơm tri thức, Não nhỏ HD 256)
-    # -----------------------------------------------------------------------
-    # model = train_model(
-    #     train_loader=train_loader, val_loader=val_loader,
-    #     tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
-    #     use_class_weights=True, embedding_matrix=embedding_matrix,
-    #     hidden_dim=256, epochs=10, dropout=0.5, weight_decay=1e-5,
-    #     use_scheduler=False, use_grad_clipping=False, early_stopping=False
-    # )
- 
-    # -----------------------------------------------------------------------
-    # EXPERIMENT 3: GloVe, Não to HD 512, Dừng theo F1
-    # -----------------------------------------------------------------------
-    model = train_model(
-        train_loader=train_loader, val_loader=val_loader,
-        tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
-        use_class_weights=True, embedding_matrix=embedding_matrix,
-        hidden_dim=512, epochs=30, dropout=0.5, weight_decay=1e-5,
-        use_scheduler=True, use_grad_clipping=True,
-        early_stopping=True, patience=5, monitor_metric='f1'
-    )
- 
-    # -----------------------------------------------------------------------
-    # EXPERIMENT 4: Tắt class_weights để so sánh với Exp 3
-    # -----------------------------------------------------------------------
-    # model = train_model(
-    #     train_loader=train_loader, val_loader=val_loader,
-    #     tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
-    #     use_class_weights=False,   # <--- FALSE ĐỂ TEST SỰ THIẾU HỤT
-    #     embedding_matrix=embedding_matrix,
-    #     hidden_dim=512, epochs=30, dropout=0.5, weight_decay=1e-5,
-    #     use_scheduler=True, use_grad_clipping=True,
-    #     early_stopping=True, patience=5, monitor_metric='f1'
-    # )
+    print("="*60)
+    print(" DANH SÁCH EXPERIMENTS Bi-LSTM")
+    print("="*60)
+    print("1: Exp 1 - Baseline (Tự học 100d, HD 256)")
+    print("2: Exp 2 - + GloVe 300d (Bơm tri thức, HD 256)")
+    print("3: Exp 3 - Tối ưu (GloVe, Não to HD 512, Dừng theo F1)")
+    print("4: Exp 4 - Unweighted (Tắt class_weights, giống Exp 3)")
+    print("5: Exp 5 - Generalization (Dừng theo Loss, Dropout 0.6)")
+    print("="*60)
+    
+    choice = input("Enter the Experiment number you want to run (1-5): ").strip()
 
     # -----------------------------------------------------------------------
-    # EXPERIMENT 5: GENERALIZATION CHECK (Mô hình ngoan, Dừng theo Loss)
+    # ONLY LOAD GLOVE IF RUNNING EXP 2, 3, 4, OR 5
     # -----------------------------------------------------------------------
-    # model = train_model(
-    #     train_loader=train_loader, val_loader=val_loader,
-    #     tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
-    #     use_class_weights=True, embedding_matrix=embedding_matrix,
-    #     hidden_dim=256, epochs=30, dropout=0.6, weight_decay=1e-3,
-    #     use_scheduler=True, use_grad_clipping=True,
-    #     early_stopping=True, patience=5, monitor_metric='loss'
-    # )
+    if choice in ['2', '3', '4', '5']:
+        print("\nLoading GloVe 300d via gensim...")
+        glove_model = api.load("glove-wiki-gigaword-300")
+        embedding_matrix = build_glove_embedding_matrix(tokenizer, glove_model, embedding_dim=300)
+    else:
+        embedding_matrix = None
+
+    # -----------------------------------------------------------------------
+    # CHẠY MODEL THEO LỰA CHỌN
+    # -----------------------------------------------------------------------
+    if choice == '1':
+        print("\nRUNNING EXPERIMENT 1...")
+        model = train_model(
+            train_loader=train_loader, val_loader=val_loader,
+            tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
+            use_class_weights=True, embedding_matrix=None,
+            hidden_dim=256, epochs=10, dropout=0.5, weight_decay=1e-5,
+            use_scheduler=False, use_grad_clipping=False, early_stopping=False
+        )
+    elif choice == '2':
+        print("\nRUNNING EXPERIMENT 2...")
+        model = train_model(
+            train_loader=train_loader, val_loader=val_loader,
+            tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
+            use_class_weights=True, embedding_matrix=embedding_matrix,
+            hidden_dim=256, epochs=10, dropout=0.5, weight_decay=1e-5,
+            use_scheduler=False, use_grad_clipping=False, early_stopping=False
+        )
+    elif choice == '3':
+        print("\nRUNNING EXPERIMENT 3...")
+        model = train_model(
+            train_loader=train_loader, val_loader=val_loader,
+            tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
+            use_class_weights=True, embedding_matrix=embedding_matrix,
+            hidden_dim=512, epochs=30, dropout=0.5, weight_decay=1e-5,
+            use_scheduler=True, use_grad_clipping=True,
+            early_stopping=True, patience=5, monitor_metric='f1'
+        )
+    elif choice == '4':
+        print("\nRUNNING EXPERIMENT 4...")
+        model = train_model(
+            train_loader=train_loader, val_loader=val_loader,
+            tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
+            use_class_weights=False,  # <--- FALSE ĐỂ TEST SỰ THIẾU HỤT
+            embedding_matrix=embedding_matrix,
+            hidden_dim=512, epochs=30, dropout=0.5, weight_decay=1e-5,
+            use_scheduler=True, use_grad_clipping=True,
+            early_stopping=True, patience=5, monitor_metric='f1'
+        )
+    elif choice == '5':
+        print("\nRUNNING EXPERIMENT 5...")
+        model = train_model(
+            train_loader=train_loader, val_loader=val_loader,
+            tokenizer=tokenizer, device=device, label_names=LABEL_NAMES,
+            use_class_weights=True, embedding_matrix=embedding_matrix,
+            hidden_dim=256, epochs=30, dropout=0.6, weight_decay=1e-3,
+            use_scheduler=True, use_grad_clipping=True,
+            early_stopping=True, patience=5, monitor_metric='loss'
+        )
+    else:
+        print("\n[ERROR] Invalid choice. Please run this cell again and enter a number from 1 to 5.")
+        model = None
 
     # -----------------------------------------------------------------------
     # THRESHOLD TUNING + TEST EVALUATION
     # -----------------------------------------------------------------------
-    best_thresh = tune_threshold(model, val_loader, tokenizer, device, LABEL_NAMES)
-    evaluate_on_test(model, test_loader, tokenizer, device, LABEL_NAMES, threshold=best_thresh)
- 
+    if model is not None:
+        if choice in ['3', '4', '5']:
+            print("\n" + "="*60)
+            print(" THRESHOLD TUNING & TEST EVALUATION")
+            print("="*60)
+            best_thresh = tune_threshold(model, val_loader, tokenizer, device, LABEL_NAMES)
+            evaluate_on_test(model, test_loader, tokenizer, device, LABEL_NAMES, threshold=best_thresh)
