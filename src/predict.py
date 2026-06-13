@@ -8,7 +8,7 @@ import os
 import torch
 import numpy as np
 from transformers import DistilBertTokenizer, RobertaTokenizer
-from models import DistilBertEmotionClassifier, RoBERTaEmotionClassifier
+from models_bert import DistilBertEmotionClassifier, RoBERTaEmotionClassifier
 
 def predict_emotion(text, experiment_type, checkpoint_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
