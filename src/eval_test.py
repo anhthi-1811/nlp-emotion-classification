@@ -144,7 +144,7 @@ def plot_best_model_performance(df_perf, model_name):
 
 if __name__ == "__main__":
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    TEST_DATA_PATH = os.path.join("data", "test.csv")
+    TEST_DATA_PATH = os.path.join("data", "processed", "test.csv")
     NUM_CLASSES = 28
 
     # Define the list of the 4 experimental setups to evaluate
