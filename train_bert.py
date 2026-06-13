@@ -13,7 +13,7 @@ from transformers import DistilBertTokenizer, RobertaTokenizer
 
 from utils import set_seed
 from data_pipeline import DataPipelineManager
-from models import DistilBertEmotionClassifier, RoBERTaEmotionClassifier
+from models_bert import DistilBertEmotionClassifier, RoBERTaEmotionClassifier
 from engine import train_one_epoch, evaluate_model
 
 def main():
