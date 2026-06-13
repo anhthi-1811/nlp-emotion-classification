@@ -285,10 +285,10 @@ def train_model(train_loader, val_loader, tokenizer, device, label_names, use_cl
             "epoch": epoch + 1,
             "train_loss": avg_train_loss,
             "val_loss": avg_val_loss,
-            "val_macro_f1": val_macro_f1,
-            "val_micro_f1": val_micro_f1,
-            "val_precision": val_precision,
-            "val_recall": val_recall
+            "macro_f1": val_macro_f1,
+            "micro_f1": val_micro_f1,
+            "precision": val_precision,
+            "recall": val_recall
         })
         
         print(f"--- Epoch {epoch+1}/{config.epochs} ---")
