@@ -39,8 +39,8 @@ def main():
     print(f"Target Compute Device: {device}")
 
     # 1. Dataset Loading Pipeline (Structured Paths)
-    train_path = os.path.join("data", "train.csv")
-    val_path = os.path.join("data", "val.csv")
+    train_path = os.path.join("data", "processed", "train.csv")
+    val_path = os.path.join("data", "processed", "val.csv")
     
     df_train = pd.read_csv(train_path)
     df_val = pd.read_csv(val_path)
@@ -85,7 +85,7 @@ def main():
     wandb.init(entity="nlp-emotion", project="nlp-emotion-classification", name=config["name"], config=config)
     optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=config["lr"])
     
-    weight_path = os.path.join("weights", "pos_weights.pt")
+    weight_path = os.path.join("data", "processed", "pos_weights.pt")
     if use_weights and os.path.exists(weight_path):
         print(f"-> Status: Loading class weights from '{weight_path}'.")
         criterion = nn.BCEWithLogitsLoss(pos_weight=torch.load(weight_path).to(device))
